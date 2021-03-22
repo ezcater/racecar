@@ -75,15 +75,15 @@ module Racecar
       private
 
       %w[increment histogram count timing gauge].each do |type|
-        define_method(type) do |*args|
-          emit(type, *args)
+        define_method(type) do |*args, tags: {}|
+          emit(type, *args, tags: tags)
         end
       end
 
       def emit(type, *args, tags: {})
-        tags = tags.map {|k, v| "#{k}:#{v}" }.to_a
+        tag_array = tags.map {|k, v| "#{k}:#{v}" }.to_a
 
-        Racecar::Datadog.statsd.send(type, *args, tags: tags)
+        Racecar::Datadog.statsd.send(type, *args, { tags: tag_array })
       end
     end
 
